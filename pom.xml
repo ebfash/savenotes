@@ -37,27 +37,27 @@
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                             http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>bshannon</groupId>
+    <groupId>ebfash</groupId>
     <artifactId>savenotes</artifactId>
     <packaging>jar</packaging>
-    <version>1.2</version>
+    <version>1.3</version>
     <name>Save Apple Notes</name>
 
     <scm>
-        <connection>scm:git:https://github.com/bshannon/savenotes.git</connection>
-        <developerConnection>scm:git:git@github.com:bshannon/savenotes.git</developerConnection>
-        <url>https://github.com/bshannon/savenotes</url>
+        <connection>scm:git:https://github.com/ebfash/savenotes.git</connection>
+        <developerConnection>scm:git:git@github.com:ebfash/savenotes.git</developerConnection>
+        <url>https://github.com/ebfash/savenotes</url>
     </scm>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/bshannon/savenotes/issues</url>
+        <url>https://github.com/ebfash/savenotesissues</url>
     </issueManagement>
 
     <licenses>
         <license>
             <name>BSD</name>
-            <url>https://github.com/bshannon/savenotes/LICENSE</url>
+            <url>https://github.com/ebfash/savenotes/LICENSE</url>
             <distribution>repo</distribution>
             <comments>BSD 3-clause</comments>
         </license>
@@ -65,9 +65,9 @@
 
     <developers>
         <developer>
-            <id>bshannon</id>
-            <name>Bill Shannon</name>
-            <email>bill.shannon@ymail.com</email>
+            <id>ebfash</id>
+            <name>Eduardo B.</name>
+            <email>ebfash@hotmail.com</email>
             <roles>
                 <role>lead</role>
             </roles>
