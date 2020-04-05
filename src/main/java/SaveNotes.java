@@ -39,6 +39,9 @@ import java.util.regex.*;
 import java.util.zip.GZIPInputStream;
 import java.nio.charset.StandardCharsets;
 
+//EDO
+import java.nio.file.*;
+
 /**
  * Save Apple Notes content.
  *
@@ -102,6 +105,227 @@ public class SaveNotes {
     private static Pattern titlePat;
     private static File root;
     private static String db = null;
+    
+    //EDO {
+    private static File[] listOfFilesFallbackImages;
+    private static File[] listOfFilesPreview;
+    private static boolean fullPath = false;
+    private static boolean replaceFileIfExist = true;
+    private static String notesPath = "";
+    
+    public static void ListOfFiles(String root){
+        String userHome = "user.home";
+        notesPath = System.getProperty(userHome) + "/Library/Group Containers/group.com.apple.notes";
+        
+        try {
+            File file = new File(notesPath + "/FallbackImages");
+            if (file.isDirectory()) {
+                File folder = new File(root + "/FallbackImages");
+                if (!folder.isDirectory()) {
+                    //Creating the directory
+                    boolean bool = folder.mkdir();
+                    if(bool){
+                       //System.out.println("Directory created successfully");
+                    }else{
+                       System.out.println("Sorry couldn’t create images directory");
+                    }
+                }
+                
+                listOfFilesFallbackImages = file.listFiles();
+                Arrays.sort(listOfFilesFallbackImages);
+            }
+        } catch(Exception e) {
+            
+        }
+        
+        try {
+            File file2 = new File(notesPath + "/Previews");
+            
+            if (file2.isDirectory()) {
+                File folder2 = new File(root + "/Previews");
+                if (!folder2.isDirectory()) {
+                    //Creating the directory
+                    boolean bool = folder2.mkdir();
+                    if(bool){
+                       //System.out.println("Directory created successfully");
+                    }else{
+                       System.out.println("Sorry couldn’t create images directory");
+                    }
+                }
+                
+                listOfFilesPreview = file2.listFiles();
+                Arrays.sort(listOfFilesPreview);
+            }
+        } catch(Exception e) {
+            
+        }
+    }
+    
+    public static String LastFileWithNameMarkDown(String uuid){
+        if(listOfFilesFallbackImages == null && listOfFilesPreview == null)
+            return "";
+        
+        String nameOfFile = "";
+        String imageString = "";
+        
+        //FallbackImages Folder
+        if(listOfFilesFallbackImages != null){
+            for (int i = 0; i < listOfFilesFallbackImages.length; i++) {
+              if (listOfFilesFallbackImages[i].isFile()) {
+                //System.out.println("File " + listOfFiles[i].getName());
+                if(listOfFilesFallbackImages[i].getName().startsWith(uuid)){
+                    nameOfFile = listOfFilesFallbackImages[i].getName();
+                }
+              } else if (listOfFilesFallbackImages[i].isDirectory()) {
+                //System.out.println("Directory " + listOfFiles[i].getName());
+              }
+            }
+        }
+        
+        if(nameOfFile != ""){
+            //System.out.println("File " + nameOfFile);
+            if(fullPath){
+                imageString = "![" + nameOfFile + "](" + new File(root + "/FallbackImages/" + nameOfFile).getAbsolutePath() + " \"" + nameOfFile + "\")";
+            } else {
+                imageString = "![" + nameOfFile + "](../FallbackImages/" + nameOfFile + " \"" + nameOfFile + "\")";
+            }
+            
+            File source = new File(notesPath + "/FallbackImages/" + nameOfFile);
+            File dest = new File(root + "/FallbackImages/" + nameOfFile);
+            copyFileUsingJava7Files(source, dest);
+            
+            return imageString;
+        }
+        
+        //Preview Folder
+        if(listOfFilesPreview != null){
+            for (int i = 0; i < listOfFilesPreview.length; i++) {
+              if (listOfFilesPreview[i].isFile()) {
+                //System.out.println("File " + listOfFiles[i].getName());
+                if(listOfFilesPreview[i].getName().startsWith(uuid)){
+                    nameOfFile = listOfFilesPreview[i].getName();
+                }
+              } else if (listOfFilesPreview[i].isDirectory()) {
+                //System.out.println("Directory " + listOfFiles[i].getName());
+              }
+            }
+        }
+        
+        if(nameOfFile != ""){
+            if(fullPath){
+                imageString = "![" + nameOfFile + "](" + new File(root + "/Previews/" + nameOfFile).getAbsolutePath() + " \"" + nameOfFile + "\")";
+            } else {
+                imageString = "![" + nameOfFile + "](../Previews/" + nameOfFile + " \"" + nameOfFile + "\")";
+            }
+            
+            File source = new File(notesPath + "/Previews/" + nameOfFile);
+            File dest = new File(root + "/Previews/" + nameOfFile);
+            copyFileUsingJava7Files(source, dest);
+            
+            return imageString;
+        }
+        
+        return "";
+    }
+    
+    public static String LastFileWithNameHtml(String uuid){
+        if(listOfFilesFallbackImages == null && listOfFilesPreview == null)
+            return "";
+        
+        String nameOfFile = "";
+        String imageString = "";
+        
+        //FallbackImages Folder
+        if(listOfFilesFallbackImages != null){
+            for (int i = 0; i < listOfFilesFallbackImages.length; i++) {
+              if (listOfFilesFallbackImages[i].isFile()) {
+                //System.out.println("File " + listOfFiles[i].getName());
+                if(listOfFilesFallbackImages[i].getName().startsWith(uuid)){
+                    nameOfFile = listOfFilesFallbackImages[i].getName();
+                }
+              } else if (listOfFilesFallbackImages[i].isDirectory()) {
+                //System.out.println("Directory " + listOfFiles[i].getName());
+              }
+            }
+        }
+        
+        if(nameOfFile != ""){
+            if(fullPath){
+                imageString = "<img alt=\"" + nameOfFile + "\" src=\"" + new File(root + "/FallbackImages/" + nameOfFile).getAbsolutePath() + "\">";
+            } else {
+                imageString = "<img alt=\"" + nameOfFile + "\" src=\"../FallbackImages/" + nameOfFile + "\">";
+            }
+            
+            File source = new File(notesPath + "/FallbackImages/" + nameOfFile);
+            File dest = new File(root + "/FallbackImages/" + nameOfFile);
+            copyFileUsingJava7Files(source, dest);
+            
+            return imageString;
+        }
+        
+        //Preview Folder
+        if(listOfFilesPreview != null){
+            for (int i = 0; i < listOfFilesPreview.length; i++) {
+              if (listOfFilesPreview[i].isFile()) {
+                //System.out.println("File " + listOfFiles[i].getName());
+                if(listOfFilesPreview[i].getName().startsWith(uuid)){
+                    nameOfFile = listOfFilesPreview[i].getName();
+                }
+              } else if (listOfFilesPreview[i].isDirectory()) {
+                //System.out.println("Directory " + listOfFiles[i].getName());
+              }
+            }
+        }
+        
+        if(nameOfFile != ""){
+            if(fullPath){
+                imageString = "<img alt=\"" + nameOfFile + "\" src=\"" + new File(root + "/Previews/" + nameOfFile).getAbsolutePath() + "\">";
+            } else {
+                imageString = "<img alt=\"" + nameOfFile + "\" src=\"../Previews/" + nameOfFile + "\">";
+            }
+            
+            File source = new File(notesPath + "/Previews/" + nameOfFile);
+            File dest = new File(root + "/Previews/" + nameOfFile);
+            copyFileUsingJava7Files(source, dest);
+            
+            return imageString;
+        }
+        
+        return "";
+    }
+    
+    private static void copyFileUsingJava7Files(File source, File dest) {
+        try {
+            Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch(IOException e){
+            e.printStackTrace();
+            System.out.println("Cannot copy file: " + source.toString());
+        }
+    }
+
+    private static void copyFileUsingStream(File source, File dest) {
+        try {
+            InputStream is = null;
+            OutputStream os = null;
+            try {
+                is = new FileInputStream(source);
+                os = new FileOutputStream(dest);
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = is.read(buffer)) > 0) {
+                    os.write(buffer, 0, length);
+                }
+            } finally {
+                if(is!=null)
+                    is.close();
+                if(os!=null)
+                    os.close();
+            }
+        } catch(IOException e){
+            System.out.println("Cannot copy file: " + source.toString());
+        }
+    }
+    //EDO }
 
     public static void main(String[] argv) throws Exception {
 
@@ -115,6 +339,18 @@ public class SaveNotes {
                 verbose = true;
             } else if (argv[optind].equals("-d")) {
                 root = new File(argv[++optind]);
+                
+                //EDO
+                File folderRoot = new File(root.toString());
+                if (!folderRoot.isDirectory()) {
+                    boolean bool = folderRoot.mkdir();
+                    if(bool){
+                       System.out.println("Directory " + root + " created successfully");
+                    }else{
+                       System.out.println("Sorry couldn’t create " + root + " directory");
+                    }
+                }
+                
             } else if (argv[optind].equals("-t")) {
                 titlePat = Pattern.compile(argv[++optind]);
             } else if (argv[optind].equals("-h")) {
@@ -132,10 +368,45 @@ public class SaveNotes {
             } else if (argv[optind].equals("--")) {
                 optind++;
                 break;
-            } else if (argv[optind].startsWith("-")) {
+            } else if (argv[optind].equals("-fp")) { //EDO
+                fullPath = true;
+            } else if (argv[optind].equals("-rf")) { //EDO
+                replaceFileIfExist = true;
+            } else if (argv[optind].startsWith("-") || argv[optind].startsWith("-?") || argv[optind].startsWith("-help") || argv[optind].startsWith("--help")) {
+                //EDO
                 System.out.println(
+                    "\n" + 
+                    "\n" + 
                     "Usage: savenotes [-f db] [-a] [-v] [-d dir] [-t pattern]" +
-                    " [-h] [-r] [-m] [-p] [-k] [-X]");
+                    " [-h] [-r] [-m] [-p] [-k] [-X] [-rf] [-fp]\n" + 
+                    "\n" + 
+                    "-f db - read a database file other than the default\n" + 
+                    "-a - save all notes (including deleted ones?)\n" + 
+                    "-v - verbose output\n" + 
+                    "-d dir - save to the specified directory instead of the current directory\n" + 
+                    "       Note: If the directory does not exist it is automatically created\n" + 
+                    "-t pattern - only save notes whose title matches the pattern regexp\n" + 
+                    "-h - save in html format\n" + 
+                    "-r - save in raw (archived object) format\n" + 
+                    "-m - save in markdown format\n" + 
+                    "-p - print to stdout instead of saving to a file\n" + 
+                    "-k - save in marked text format (mostly useful for debugging with -X)\n" + 
+                    "-X - display lots of detailed debugging output\n" + 
+                    
+                    "-rf - Replace Export Note File if Exist (Default true)\n" + 
+                    
+                    "-fp - Full Path to images\n" + 
+                    "       Image files are copied to destination folder but some programs need full path to import images\n" + 
+                    "\n" + 
+                    "\n" + 
+                    "\n" + 
+                    "Copies from Apple Notes Folder (/Users/#user_name#/Library/Group Containers/group.com.apple.notes/)\n" + 
+                    "These folders:\n" + 
+                    "    - FallbackImages\n" + 
+                    "      and\n" + 
+                    "    - Previews\n" + 
+                    "In the .jar folder or if you use the -d parameter inside it\n"
+                );
                 System.exit(1);
             } else {
                 break;
@@ -149,7 +420,13 @@ public class SaveNotes {
         if (root == null)
             root = new File(".");
 
+        //EDO
+        ListOfFiles(root.toString());
+        
         save();
+        
+        //EDO
+        System.out.println("Complete process");
     }
 
     /**
@@ -197,8 +474,10 @@ public class SaveNotes {
                 if (!dir.exists())
                     dir.mkdir();
                 note = new File(dir, title + ext);
-                for (int i = 1; note.exists(); i++)
-                    note = new File(dir, title + "-" + i + ext);
+                if(!replaceFileIfExist){
+                    for (int i = 1; note.exists(); i++)
+                        note = new File(dir, title + "-" + i + ext);
+                }
                 if (verbose)
                     System.out.println("Save: " + note);
             }
@@ -217,9 +496,13 @@ public class SaveNotes {
                     try (InputStream bis = rs.getBinaryStream("data")) {
                         int c;
                         if (bis != null) {
-                            InputStream is = new GZIPInputStream(bis);
-                            while ((c = is.read()) >= 0)
-                                os.write((char)c);
+                            try{
+                                InputStream is = new GZIPInputStream(bis);
+                                while ((c = is.read()) >= 0)
+                                    os.write((char)c);
+                            }catch(Exception e){
+                                
+                            }
                         }
                     }
                 }
@@ -245,9 +528,15 @@ public class SaveNotes {
         if (is == null) {
             return "<NO DATA>"; // XXX
         }
-
-        is = new GZIPInputStream(is);
+        
+        //EDO
+        try{
+            is = new GZIPInputStream(is);
+        } catch (Exception e){
+            return "<ERROR>";
+        }
         ArchivedObjectReader nr = new ArchivedObjectReader(is);
+
         ObjectData nd = nr.next();
         assert nd.index() == 1 && nd.getInt() == 0;
         nd = nr.next();
@@ -265,9 +554,10 @@ public class SaveNotes {
         nd = nr.next();
         assert nd.index() == 2;
         String text = nd.getString();
+
         debug("Text len: %d%n", text.length());
         debug("Text:%n%s%n", text);
-        
+
         if (!marked && !html && !markdown)
             return text;
 
@@ -591,6 +881,7 @@ public class SaveNotes {
             return getMarkdownText(text, attributes);
         else
             return getMarkedText(text, attributes);
+        
     }
 
     /**
@@ -725,9 +1016,18 @@ public class SaveNotes {
                         curps = ps;
                     } else if (s instanceof UuidStyle) {
                         UuidStyle us = (UuidStyle)s;
-                        mtext.append(String.format("<INSERT UUID %s, TYPE %s>",
+
+                        //EDO
+                        //System.out.println("UUID: " + us.uuid.toString());
+                        String img = LastFileWithNameHtml(us.uuid.toString());
+                        if(img == ""){
+                            mtext.append(String.format("<INSERT UUID %s, TYPE %s>",
                                                     us.uuid, us.type));
-                        close.add("</INSERT>");
+                            close.add("</INSERT>");
+                        } else {
+                            mtext.append(img);
+                        }
+                        
                     } else if (s instanceof UrlStyle) {
                         UrlStyle us = (UrlStyle)s;
                         mtext.append("<a href=\"").append(us.url).append("\">");
@@ -736,9 +1036,13 @@ public class SaveNotes {
                         FontStyle fs = (FontStyle)s;
                         // XXX - font name ignored for now
                         // XXX - is this the right way to handle non-integer sizes?
-                        mtext.append("<font size=\"").append(fontSize(fs.size)).
+                        /*mtext.append("<font size=\"").append(fontSize(fs.size)).
                                 append("\">");
                         close.add("</font>");
+                        */
+                        //EDO
+                        mtext.append("<b>");
+                        close.add("</b>");
                     } else if (s instanceof TextStyle) {
                         TextStyle ts = (TextStyle)s;
                         if ((ts.style & TextStyle.BOLD) != 0) {
@@ -977,19 +1281,33 @@ public class SaveNotes {
                         curps = ps;
                     } else if (s instanceof UuidStyle) {
                         UuidStyle us = (UuidStyle)s;
-                        mtext.append(String.format("<INSERT UUID %s, TYPE %s>",
+                        //EDO
+                        //System.out.println("UUID: " + us.uuid.toString());
+                        String img = LastFileWithNameMarkDown(us.uuid.toString());
+                        if(img == ""){
+                            mtext.append(String.format("<INSERT UUID %s, TYPE %s>",
                                                     us.uuid, us.type));
+                        } else {
+                            mtext.append(img);
+                        }
+                        
+                        
                     } else if (s instanceof UrlStyle) {
                         UrlStyle us = (UrlStyle)s;
                         mtext.append("[");
                         close.add("](" + us.url + ")");
                     } else if (s instanceof FontStyle) {
+                        /*
                         FontStyle fs = (FontStyle)s;
                         // XXX - font name ignored for now
                         // XXX - is this the right way to handle non-integer sizes?
                         mtext.append("<font size=\"").append(fontSize(fs.size)).
                                 append("\">");
                         close.add("</font>");
+                        */
+                        //EDO
+                        mtext.append("**");
+                        close.add("**");
                     } else if (s instanceof TextStyle) {
                         TextStyle ts = (TextStyle)s;
                         if ((ts.style & TextStyle.BOLD) != 0) {
