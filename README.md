@@ -52,3 +52,7 @@ format of the note data, which is stored as a (non-keyed) Objective-C
 archived object, gzipped, in a sqlite database.
 The `savenotes` program reads the data from the database, interprets
 the raw note data format, and saves the contents of the notes.
+
+
+
+Based on: https://github.com/bshannon/savenotes
