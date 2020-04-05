@@ -10,7 +10,7 @@ By default, it saves all your notes to the current directory, in
 subdirectories based on your Notes folders.  Use the `-d dir`
 option to tell it where to save.
 
-Usage: savenotes [-f db] [-a] [-v] [-d dir] [-t pattern] [-h] [-r] [-m] [-p] [-k] [-X]
+Usage: savenotes [-f db] [-a] [-v] [-d dir] [-t pattern] [-h] [-r] [-m] [-p] [-k] [-X] [-rf] [-fp]
 
 Options are:
 
@@ -18,6 +18,9 @@ Options are:
 * `-a` - save all notes (including deleted ones?)
 * `-v` - verbose output
 * `-d` *dir* - save to the specified directory instead of the current directory
+```
+        Note: If the directory does not exist it is automatically created
+``` 
 * `-t` *pattern* - only save notes whose title matches the pattern regexp
 * `-h` - save in html format
 * `-r` - save in raw (archived object) format
@@ -25,6 +28,22 @@ Options are:
 * `-p` - print to stdout instead of saving to a file
 * `-k` - save in marked text format (mostly useful for debugging with -X)
 * `-X` - display lots of detailed debugging output
+* `-rf` - Replace Export Notes Files if Exist (Default true)
+* `-fp` - Full Path to images
+```
+          Note: Image files are copied to destination folder
+          but some programs need full path to import images
+```
+
+```        
+Copies from Apple Notes Folder
+    (/Users/#user_name#/Library/Group Containers/group.com.apple.notes/)
+These folders:
+	- FallbackImages
+	  and
+	- Previews
+In the .jar folder or if you use the -d parameter inside it
+```
 
 ## Data format
 
