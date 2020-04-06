@@ -36,11 +36,10 @@ Options are:
 ```
 
 ```        
-Copies from Apple Notes Folder
+Automatic copies images from Apple Notes Folder
     (/Users/#user_name#/Library/Group Containers/group.com.apple.notes/)
 These folders:
 	- FallbackImages
-	  and
 	- Previews
 In the .jar folder or if you use the -d parameter inside it
 ```
